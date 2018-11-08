@@ -44,7 +44,7 @@ app.get('/todos/:id', (req, res) => {
   }, (e) => res.status(400).send(e));
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log('Server running on ' + port);
 });
 
