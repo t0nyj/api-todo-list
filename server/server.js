@@ -1,8 +1,8 @@
+require('./config/config.js')
 const _ = require('lodash');
 let express = require('express');
 let bodyParser = require('body-parser');
 let {ObjectID} = require('mongodb');
-
 
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
@@ -10,7 +10,7 @@ let {User} = require('./models/user');
 
 let app = express();
 app.use(bodyParser.json());
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 mongoose.set('useFindAndModify', false);
 
 app.post('/todos', (req, res) => {
