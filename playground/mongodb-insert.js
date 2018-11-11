@@ -1,3 +1,4 @@
+//mongoose.set('useFindAndModify', false);
 const {MongoClient, ObjectID} = require('mongodb');
 MongoClient.connect('mongodb://localhost:27017/ToDoApp',
   {useNewUrlParser: true}, (err, client) => {

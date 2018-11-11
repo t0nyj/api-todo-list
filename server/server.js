@@ -1,3 +1,4 @@
+const _ = require('lodash');
 let express = require('express');
 let bodyParser = require('body-parser');
 let {ObjectID} = require('mongodb');
@@ -10,6 +11,7 @@ let {User} = require('./models/user');
 let app = express();
 app.use(bodyParser.json());
 const port = process.env.PORT || 3000;
+mongoose.set('useFindAndModify', false);
 
 app.post('/todos', (req, res) => {
   let todo = new Todo({
@@ -55,6 +57,26 @@ app.delete('/todos/:id', (req, res) => {
     }
     res.send({todo});
   }, (e) => res.status(400).send(e));
+});
+
+app.patch('/todos/:id', (req, res) => {
+  let id = req.params.id;
+  let body = _.pick(req.body, ['text', 'completed']);
+  if(!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+  if(_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completedAt = null;
+    body.completed = false;
+  }
+  Todo.findOneAndUpdate({_id: id}, {$set: body}, {new: true}).then((todo) => {
+    if(!todo){
+      return res.status(404).send();
+    }
+    res.send({todo});
+  }).catch((e) => res.status(400).send());
 });
 
 app.listen(port, () => {
