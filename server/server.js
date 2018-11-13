@@ -1,4 +1,5 @@
-require('./config/config.js')
+require('./config/config.js');
+
 const _ = require('lodash');
 let express = require('express');
 let bodyParser = require('body-parser');
@@ -11,7 +12,7 @@ let {User} = require('./models/user');
 let app = express();
 app.use(bodyParser.json());
 const port = process.env.PORT;
-mongoose.set('useFindAndModify', false);
+
 
 app.post('/todos', (req, res) => {
   let todo = new Todo({
@@ -77,6 +78,20 @@ app.patch('/todos/:id', (req, res) => {
     }
     res.send({todo});
   }).catch((e) => res.status(400).send());
+});
+
+// POST /users
+app.post('/users', (req, res) => {
+  let body = _.pick(req.body, ['email', 'password'])
+  let user = new User(body);
+  user.save().then((user) => {
+    //res.send(user);
+    return user.generateAuthToken()
+  })
+  .then((token) => {
+    res.header('x-auth', token).send(user);
+  })
+  .catch((err) => res.status(400).send(err));
 });
 
 app.listen(port, () => {
